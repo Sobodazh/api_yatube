@@ -3,11 +3,13 @@ from .serializers import (PostSerializer, GroupSerializer, UserSerializer,
                           CommentSerializer)
 from posts.models import Post, Group, User, Comment
 from django.core.exceptions import PermissionDenied
+from rest_framework.permissions import IsAuthenticated
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all()
+    queryset = Post.objects.select_related('group').all()
     serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
